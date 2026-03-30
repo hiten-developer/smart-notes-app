@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SmartNotes — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07090f;--card:#0d1117;--card2:#0f1623;--card3:#111827;--border:#1e2d3d;--border2:#1f2937;--accent:#3b82f6;--accent2:#8b5cf6;--text:#f1f5f9;--muted:#64748b;--danger:#ef4444;--success:#10b981;--r:12px;--nav:60px}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+/* BG */
+body::before{content:'';position:fixed;width:800px;height:800px;background:radial-gradient(circle,rgba(59,130,246,.04) 0%,transparent 60%);top:-300px;right:-300px;border-radius:50%;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{height:var(--nav);background:rgba(13,17,23,.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px}
+.bmark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:grid;place-items:center;font-size:16px;box-shadow:0 4px 16px rgba(59,130,246,.25)}
+.bname{font-family:'Playfair Display',serif;font-size:18px;letter-spacing:-.2px}
+.nav-r{display:flex;align-items:center;gap:12px}
+.nav-user{font-size:13px;color:var(--muted);padding:6px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px}
+.nav-user b{color:var(--text);font-weight:600}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-logout:hover{border-color:var(--danger);color:#fca5a5}
+
+/* MAIN */
+main{max-width:1160px;margin:0 auto;padding:40px 32px;position:relative;z-index:1}
+
+/* HEADER */
+.mhead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;gap:20px;flex-wrap:wrap}
+.mhead-l h1{font-family:'Playfair Display',serif;font-size:34px;letter-spacing:-.5px;line-height:1.1}
+.mhead-l h1 em{font-style:italic;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mhead-l p{color:var(--muted);font-size:14px;margin-top:6px}
+.btn-new{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r);padding:13px 22px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 4px 20px rgba(59,130,246,.25)}
+.btn-new:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 28px rgba(59,130,246,.35)}
+.btn-new:active{transform:translateY(0)}
+.plus{font-size:18px;line-height:1}
+
+/* SEARCH */
+.sbar{position:relative;margin-bottom:28px}
+.sbar input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 18px 13px 48px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+.sbar input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(59,130,246,.07);background:var(--card2)}
+.sbar input::placeholder{color:#374151}
+.sico{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}
+
+/* STATS */
+.stats{display:flex;align-items:center;gap:10px;margin-bottom:28px;font-size:13px;color:var(--muted)}
+.scnt{background:rgba(59,130,246,.1);color:var(--accent);border:1px solid rgba(59,130,246,.2);padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+
+/* CARD */
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:22px;cursor:default;transition:all .25s;position:relative;overflow:hidden;animation:cin .3s ease both}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.card:hover{border-color:rgba(59,130,246,.25);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.card:hover::after{transform:scaleX(1)}
+.ctitle{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:10px;line-height:1.35;word-break:break-word}
+.cbody{font-size:13px;color:var(--muted);line-height:1.75;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.cfoot{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.cdate{font-size:11px;color:#374151;text-transform:uppercase;letter-spacing:.5px}
+.cacts{display:flex;gap:6px;opacity:0;transition:opacity .2s}
+.card:hover .cacts{opacity:1}
+.ib{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--card3);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s}
+.ib.ed:hover{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.08)}
+.ib.dl:hover{border-color:var(--danger);color:#fca5a5;background:rgba(239,68,68,.08)}
+
+/* EMPTY */
+.empty{text-align:center;padding:90px 20px;display:none}
+.empty.show{display:block;animation:cin .4s ease}
+.eico{font-size:56px;margin-bottom:18px;opacity:.3;filter:grayscale(1)}
+.etitle{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:10px}
+.esub{color:var(--muted);font-size:14px;margin-bottom:28px}
+.btn-start{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r);padding:13px 24px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-start:hover{opacity:.9;transform:translateY(-1px)}
+
+/* LOADING */
+.ld{text-align:center;padding:70px;color:var(--muted);font-size:14px;display:none}
+.ld.show{display:block}
+.spin{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;animation:fdin .2s ease}
+.ov.show{display:flex}
+@keyframes fdin{from{opacity:0}to{opacity:1}}
+
+/* MODAL */
+.modal{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:540px;animation:min .25s cubic-bezier(.34,1.56,.64,1);position:relative}
+@keyframes min{from{opacity:0;transform:scale(.93) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.mtitle{font-family:'Playfair Display',serif;font-size:22px}
+.xbtn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:16px;transition:all .2s}
+.xbtn:hover{border-color:var(--danger);color:#fca5a5}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.field input,.field textarea{width:100%;background:var(--card3);border:1.5px solid var(--border2);border-radius:10px;padding:13px 16px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+.field input:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(59,130,246,.08)}
+.field input::placeholder,.field textarea::placeholder{color:#374151}
+.field textarea{resize:vertical;min-height:150px;line-height:1.7}
+.mfoot{display:flex;gap:12px;margin-top:24px}
+.cbtn{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:13px;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s}
+.cbtn:hover{border-color:var(--text);color:var(--text)}
+.sbtn{flex:2;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:13px;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.sbtn:hover{opacity:.9}
+.sbtn:disabled{opacity:.5;cursor:not-allowed}
+.mal{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.mal.show{display:block}
+.mal{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+
+/* DELETE MODAL */
+.dmodal{max-width:400px;text-align:center}
+.dico{font-size:44px;margin-bottom:16px}
+.dmodal p{color:var(--muted);font-size:14px;margin-top:8px;margin-bottom:28px;line-height:1.7}
+.dbtn{flex:1;background:var(--danger);color:#fff;border:none;padding:13px;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.dbtn:hover{opacity:.88}
+.dbtn:disabled{opacity:.5;cursor:not-allowed}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px 20px;font-size:13.5px;display:flex;align-items:center;gap:10px;z-index:999;animation:tin .3s cubic-bezier(.34,1.56,.64,1);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.toast.ok{border-color:rgba(16,185,129,.3)}
+.toast.er{border-color:rgba(239,68,68,.3)}
+
+@keyframes cin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){nav{padding:0 20px}main{padding:24px 16px}.grid{grid-template-columns:1fr}.nav-user{display:none}.mhead{flex-direction:column}.btn-new{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">
+    <div class="bmark">📝</div>
+    <span class="bname">SmartNotes</span>
+  </div>
+  <div class="nav-r">
+    <div class="nav-user">Hello, <b id="uname">User</b></div>
+    <button class="btn-logout" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="mhead">
+    <div class="mhead-l">
+      <h1>My <em>Notes</em></h1>
+      <p id="dateLine">Loading your notes...</p>
+    </div>
+    <button class="btn-new" onclick="openCreate()">
+      <span class="plus">＋</span> New Note
+    </button>
+  </div>
+
+  <div class="sbar">
+    <span class="sico">🔍</span>
+    <input type="text" id="srch" placeholder="Search notes by title or content..." oninput="search()"/>
+  </div>
+
+  <div class="stats">
+    <span>Showing</span>
+    <span class="scnt" id="cnt">0</span>
+    <span id="statsLabel">notes</span>
+  </div>
+
+  <div class="ld" id="ld"><div class="spin"></div>Fetching your notes...</div>
+
+  <div class="empty" id="emp">
+    <div class="eico">📭</div>
+    <h3 class="etitle">No notes yet</h3>
+    <p class="esub">Click "New Note" to write your first note. It's quick!</p>
+    <button class="btn-start" onclick="openCreate()"><span>＋</span> Create First Note</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- NOTE MODAL -->
+<div class="ov" id="noteOv">
+  <div class="modal">
+    <div class="mh">
+      <h3 class="mtitle" id="mtitle">New Note</h3>
+      <button class="xbtn" onclick="closeNote()">✕</button>
+    </div>
+    <div class="mal" id="merr"></div>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="ntitle" placeholder="Give your note a title..."/>
+    </div>
+    <div class="field">
+      <label>Content</label>
+      <textarea id="ncontent" placeholder="Write your note content here..."></textarea>
+    </div>
+    <div class="mfoot">
+      <button class="cbtn" onclick="closeNote()">Cancel</button>
+      <button class="sbtn" id="sbtn" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="ov" id="delOv">
+  <div class="modal dmodal">
+    <div class="dico">🗑️</div>
+    <h3 class="mtitle">Delete this note?</h3>
+    <p>This action is permanent and cannot be undone. Your note will be gone forever.</p>
+    <div class="mfoot">
+      <button class="cbtn" onclick="closeDel()">Keep it</button>
+      <button class="dbtn" id="dbtn" onclick="doDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:5000/api';
+let notes=[];
+let editId=null;
+let delId=null;
+
+// AUTH GUARD
+const token=localStorage.getItem('token');
+if(!token){window.location.href='login.html';}
+
+function hdr(){return{'Content-Type':'application/json','Authorization':'Bearer '+token}}
+
+// FORMAT DATE
+function fmtDate(d){return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+
+// TOAST
+function toast(msg,type='ok'){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML='<span>'+(type==='ok'?'✅':'❌')+'</span> '+msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},3000);
+}
+
+// RENDER
+function render(arr){
+  const grid=document.getElementById('grid');
+  const emp=document.getElementById('emp');
+  const cnt=document.getElementById('cnt');
+  const dl=document.getElementById('dateLine');
+  const sl=document.getElementById('statsLabel');
+
+  cnt.textContent=arr.length;
+  sl.textContent=arr.length===1?'note':'notes';
+  dl.textContent=arr.length>0?'All your thoughts in one place':'No notes found';
+
+  if(arr.length===0){grid.innerHTML='';emp.classList.add('show');return;}
+  emp.classList.remove('show');
+
+  grid.innerHTML=arr.map((n,i)=>`
+    <div class="card" style="animation-delay:${i*0.04}s">
+      <div class="ctitle">${esc(n.title)}</div>
+      <div class="cbody">${esc(n.content)}</div>
+      <div class="cfoot">
+        <span class="cdate">${fmtDate(n.createdAt)}</span>
+        <div class="cacts">
+          <button class="ib ed" title="Edit" onclick="openEdit('${n._id}')">✏️</button>
+          <button class="ib dl" title="Delete" onclick="openDel('${n._id}')">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// FETCH
+async function load(){
+  document.getElementById('ld').classList.add('show');
+  document.getElementById('grid').style.display='none';
+  try{
+    const res=await fetch(`${API}/notes`,{headers:hdr()});
+    if(res.status===401){localStorage.clear();window.location.href='login.html';return;}
+    const d=await res.json();
+    notes=d.notes||[];
+    render(notes);
+  }catch(e){toast('Cannot reach server.','er');}
+  finally{
+    document.getElementById('ld').classList.remove('show');
+    document.getElementById('grid').style.display='grid';
+  }
+}
+
+// SEARCH
+function search(){
+  const q=document.getElementById('srch').value.toLowerCase().trim();
+  if(!q){render(notes);return;}
+  render(notes.filter(n=>n.title.toLowerCase().includes(q)||n.content.toLowerCase().includes(q)));
+}
+
+// CREATE MODAL
+function openCreate(){
+  editId=null;
+  document.getElementById('mtitle').textContent='New Note';
+  document.getElementById('sbtn').textContent='Save Note';
+  document.getElementById('ntitle').value='';
+  document.getElementById('ncontent').value='';
+  document.getElementById('merr').className='mal';
+  document.getElementById('noteOv').classList.add('show');
+  setTimeout(()=>document.getElementById('ntitle').focus(),120);
+}
+
+// EDIT MODAL
+function openEdit(id){
+  const n=notes.find(x=>x._id===id);
+  if(!n)return;
+  editId=id;
+  document.getElementById('mtitle').textContent='Edit Note';
+  document.getElementById('sbtn').textContent='Update Note';
+  document.getElementById('ntitle').value=n.title;
+  document.getElementById('ncontent').value=n.content;
+  document.getElementById('merr').className='mal';
+  document.getElementById('noteOv').classList.add('show');
+  setTimeout(()=>document.getElementById('ntitle').focus(),120);
+}
+
+function closeNote(){document.getElementById('noteOv').classList.remove('show');editId=null;}
+
+// SAVE NOTE
+async function saveNote(){
+  const title=document.getElementById('ntitle').value.trim();
+  const content=document.getElementById('ncontent').value.trim();
+  const merr=document.getElementById('merr');
+  const sbtn=document.getElementById('sbtn');
+  merr.className='mal';
+
+  if(!title){merr.textContent='Please enter a title.';merr.className='mal show';return;}
+  if(!content){merr.textContent='Please enter some content.';merr.className='mal show';return;}
+
+  sbtn.disabled=true;sbtn.textContent='Saving...';
+
+  try{
+    const isEdit=!!editId;
+    const url=isEdit?`${API}/notes/${editId}`:`${API}/notes`;
+    const method=isEdit?'PUT':'POST';
+    const res=await fetch(url,{method,headers:hdr(),body:JSON.stringify({title,content})});
+    const d=await res.json();
+    if(!res.ok){merr.textContent=d.message||'Something went wrong.';merr.className='mal show';return;}
+    closeNote();
+    toast(isEdit?'Note updated!':'Note created!');
+    await load();
+  }catch(e){
+    merr.textContent='Cannot reach server.';merr.className='mal show';
+  }finally{
+    sbtn.disabled=false;
+    sbtn.textContent=editId?'Update Note':'Save Note';
+  }
+}
+
+// DELETE
+function openDel(id){delId=id;document.getElementById('delOv').classList.add('show');}
+function closeDel(){document.getElementById('delOv').classList.remove('show');delId=null;}
+
+async function doDelete(){
+  if(!delId)return;
+  const btn=document.getElementById('dbtn');
+  btn.disabled=true;btn.textContent='Deleting...';
+  try{
+    const res=await fetch(`${API}/notes/${delId}`,{method:'DELETE',headers:hdr()});
+    if(!res.ok){toast('Failed to delete.','er');return;}
+    closeDel();toast('Note deleted.');
+    await load();
+  }catch(e){toast('Cannot reach server.','er');}
+  finally{btn.disabled=false;btn.textContent='Yes, Delete';}
+}
+
+// LOGOUT
+function logout(){localStorage.clear();window.location.href='login.html';}
+
+// KEYBOARD
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeNote();closeDel();}
+});
+
+// CLOSE ON OVERLAY CLICK
+document.getElementById('noteOv').addEventListener('click',e=>{if(e.target===document.getElementById('noteOv'))closeNote();});
+document.getElementById('delOv').addEventListener('click',e=>{if(e.target===document.getElementById('delOv'))closeDel();});
+
+// INIT
+window.addEventListener('DOMContentLoaded',()=>{
+  // Set username
+  const email=localStorage.getItem('userEmail')||'';
+  const name=localStorage.getItem('userName')||email.split('@')[0]||'User';
+  document.getElementById('uname').textContent=name.charAt(0).toUpperCase()+name.slice(1);
+  load();
+});
+</script>
+</body>
+</html>
