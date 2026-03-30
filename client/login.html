@@ -77,7 +77,7 @@ h1 em{font-style:italic;background:linear-gradient(135deg,var(--accent2),var(--a
   </div>
 </div>
 <script>
-const API='http://localhost:5000/api';
+const API='https://smart-notes-backend-af5z.onrender.com/api';
 function err(m){const e=document.getElementById('ea');e.textContent=m;e.className='al err show';document.getElementById('oa').className='al ok'}
 function ok(m){const e=document.getElementById('oa');e.textContent=m;e.className='al ok show';document.getElementById('ea').className='al err'}
 if(localStorage.getItem('token'))window.location.href='dashboard.html';
