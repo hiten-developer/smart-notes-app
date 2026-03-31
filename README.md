@@ -137,20 +137,6 @@ Open `client/index.html` in your browser directly — or use Live Server extensi
 
 ---
 
-## 📸 Screenshots
-
-### Signup Page
-![Signup](https://via.placeholder.com/800x450/0d1117/3b82f6?text=Signup+Page)
-<img width="850" height="798" alt="Screenshot 2026-03-24 185135" src="https://github.com/user-attachments/assets/cc5f5d65-e804-452c-834e-fd38e23abf16" />
-
-### Login Page
-![Login](https://via.placeholder.com/800x450/0d1117/8b5cf6?text=Login+Page)
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/800x450/0d1117/3b82f6?text=Notes+Dashboard)
-
----
-
 ## 🔐 Security Features
 
 - Passwords are hashed using **bcrypt** before storing in database
